@@ -1,0 +1,8 @@
+.venv/
+.venv-linux/
+.pytest_cache/
+__pycache__/
+frontend/AgentGuard-frontend/node_modules/
+frontend/AgentGuard-frontend/.next/
+frontend/AgentGuard-frontend/.env.local
+*.pyc
