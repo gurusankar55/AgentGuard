@@ -26,11 +26,7 @@ export default function Home() {
     const handleProvider = (event: Event) => {
       const detail = (event as CustomEvent).detail;
 
-      if (
-  detail?.info?.uuid &&
-  detail?.provider &&
-  detail?.info?.rdns !== "app.keplr"
-) {
+      if (detail?.info?.uuid && detail?.provider) {
         discoveredWallets.set(detail.info.uuid, {
           info: detail.info,
           provider: detail.provider,
