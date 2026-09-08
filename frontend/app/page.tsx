@@ -27,17 +27,25 @@ export default function Home() {
       const detail = (event as CustomEvent).detail;
 
       if (detail?.info?.uuid && detail?.provider) {
-        discoveredWallets.set(detail.info.uuid, {
+        const walletId = detail.info.rdns || detail.info.uuid;
+
+        discoveredWallets.set(walletId, {
+          id: walletId,
           info: detail.info,
           provider: detail.provider,
         });
+
         setWallets(Array.from(discoveredWallets.values()));
       }
     };
 
     const ethereumProvider = (window as any).ethereum;
+
     if (ethereumProvider?.isMetaMask) {
-      discoveredWallets.set("metamask-fallback", {
+      const walletId = "io.metamask";
+
+      discoveredWallets.set(walletId, {
+        id: walletId,
         info: {
           uuid: "metamask-fallback",
           name: "MetaMask",
@@ -45,6 +53,7 @@ export default function Home() {
         },
         provider: ethereumProvider,
       });
+
       setWallets(Array.from(discoveredWallets.values()));
     }
 
@@ -90,28 +99,14 @@ export default function Home() {
     loadLatestVerification();
   }, []);
 
-  const getSelectedWalletProvider = async () => {
+  const getSelectedWalletProvider = () => {
     if (!selectedWalletId) return undefined;
 
-    return await new Promise<any>((resolve) => {
-      let selectedProvider: any;
+    const selectedWallet = wallets.find(
+      (wallet) => wallet.id === selectedWalletId
+    );
 
-      const handleProvider = (event: Event) => {
-        const detail = (event as CustomEvent).detail;
-
-        if (detail?.info?.uuid === selectedWalletId && detail?.provider) {
-          selectedProvider = detail.provider;
-        }
-      };
-
-      window.addEventListener("eip6963:announceProvider", handleProvider);
-      window.dispatchEvent(new Event("eip6963:requestProvider"));
-
-      setTimeout(() => {
-        window.removeEventListener("eip6963:announceProvider", handleProvider);
-        resolve(selectedProvider);
-      }, 500);
-    });
+    return selectedWallet?.provider;
   };
 
   const handleVerify = async () => {
@@ -411,7 +406,7 @@ export default function Home() {
             >
               <option value="">Select wallet</option>
               {wallets.map((wallet) => (
-                <option key={wallet.info.uuid} value={wallet.info.uuid}>
+                <option key={wallet.id} value={wallet.id}>
                   {wallet.info.name}
                 </option>
               ))}
