@@ -35,6 +35,19 @@ export default function Home() {
       }
     };
 
+    const ethereumProvider = (window as any).ethereum;
+    if (ethereumProvider?.isMetaMask) {
+      discoveredWallets.set("metamask-fallback", {
+        info: {
+          uuid: "metamask-fallback",
+          name: "MetaMask",
+          rdns: "io.metamask",
+        },
+        provider: ethereumProvider,
+      });
+      setWallets(Array.from(discoveredWallets.values()));
+    }
+
     window.addEventListener("eip6963:announceProvider", handleProvider);
     window.dispatchEvent(new Event("eip6963:requestProvider"));
 
